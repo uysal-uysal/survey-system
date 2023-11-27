@@ -2,13 +2,13 @@ import firebase from "firebase/app";
 import "firebase/firestore";
 
 export const firebaseConfig = {
-  apiKey: "AIzaSyAAfMnNr2rygk37hue-dOzFVLOxCpnlh1s",
-  authDomain: "survey-system-845b2.firebaseapp.com",
-  projectId: "survey-system-845b2",
-  storageBucket: "survey-system-845b2.appspot.com",
-  messagingSenderId: "293932024837",
-  appId: "1:293932024837:web:860d6a8e3bef8e7e15486c",
-  measurementId: "G-F7MGFXCEVF"
+  apiKey: process.env.REACT_APP_FIREBASE_API,
+  authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.REACT_APP_FIREBSE_STORAGE_BUCKET,
+  messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.REACT_APP_FIREBASE_APP_ID,
+  measurementId: process.env.REACT_APP_FIREBASE_MEASUREMENT_ID,
 };
 
 firebase.initializeApp(firebaseConfig);
