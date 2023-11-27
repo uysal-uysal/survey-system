@@ -11,14 +11,21 @@ import "react-toastify/dist/ReactToastify.css";
 import Loader from "../Loader.gif";
 import { UserSession } from "../firebase/UserProvider";
 
+// Poll component
 const Poll = (props) => {
+  // extract poll id from route parameters
   const id = props.match.params.id;
+
+  // extract user information from UserProvider component
   const { user } = UserSession();
   const uid = user.uid;
+
+  // states for store data
   const [poll, setPoll] = useState(null);
   const [index, setIndex] = useState(-1);
   const [chartData, setChartData] = useState([]);
 
+  // copy poll url to clipboard for sharing
   const handleURL = () => {
     navigator.clipboard.writeText(
       "https://survey-system-845b2.web.app" + poll.id
@@ -34,6 +41,7 @@ const Poll = (props) => {
         const pollData = document.data();
         setPoll(pollData);
 
+        // if user has already voted 
         if (pollData.questions.length > 0) {
           const firstQuestion = pollData.questions[0];
 
@@ -42,6 +50,7 @@ const Poll = (props) => {
           }
         }
       } else {
+        // if poll doesnt exist redirect to not_found
         props.history.push("/not_found");
       }
     });
@@ -49,11 +58,13 @@ const Poll = (props) => {
     return unsubscribe;
   }, [id, props.history, uid]);
 
+  // handle clicks on  question option
   const handleClick = (questionIndex, optionIndex) => {
     setIndex(optionIndex);
 
     const docRef = firestore.doc(`/polls/${id}`);
 
+    // fetch poll data from firestore document and update vote counts
     docRef.get().then((doc) => {
       if (doc.exists) {
         const questions = doc.data().questions;
@@ -77,7 +88,7 @@ const Poll = (props) => {
               questions,
             });
 
-            // Update the chart data for the selected question
+            // update data for the selected question
             const x = [];
             const y = [];
             options.forEach((option) => {
@@ -85,6 +96,7 @@ const Poll = (props) => {
               y.push(option.count);
             });
 
+            // define chart data for the selected question
             const updatedChartData = [...chartData];
             updatedChartData[questionIndex] = {
               labels: x,
@@ -120,6 +132,7 @@ const Poll = (props) => {
     });
   };
 
+  // handle logout
   const handleLogout = () => {
     firebase
       .auth()
@@ -128,6 +141,7 @@ const Poll = (props) => {
       .catch(function (error) {});
   };
 
+  // show loader if poll data is not yet available
   if (!poll)
     return (
       <div
@@ -144,6 +158,7 @@ const Poll = (props) => {
       </div>
     );
 
+  // chart options for visualizing poll data
   const chartOptions = {
     scales: {
       yAxes: [
@@ -159,11 +174,11 @@ const Poll = (props) => {
       ],
       xAxes: [
         {
-          type: "linear", // Bu satır eklenmiştir
-          position: "bottom", // Bu satır eklenmiştir
+          type: "linear",
+          position: "bottom",
           ticks: {
             beginAtZero: true,
-            stepSize: 1, // Bu satır eklenmiştir
+            stepSize: 1,
             precision: 0,
             fontFamily: "Mulish",
             fontStyle: "500",
@@ -179,6 +194,7 @@ const Poll = (props) => {
     maintainAspectRatio: false,
   };
 
+  // render Poll component UI
   return (
     <div>
       <div className="logout_grid">
@@ -204,6 +220,8 @@ const Poll = (props) => {
       <div className="flex">
         <div className="options_div animate__animated animate__fadeInLeft">
           <h2>Select an Option</h2>
+          
+          {/* map over questions array and render each question and its options */}
           {poll.questions.map((question, qIndex) => (
             <div
               key={qIndex}
@@ -217,6 +235,8 @@ const Poll = (props) => {
               }}
             >
               <h2>{question.title}</h2>
+
+              {/* map over options array and render each option and its chart*/}
               {question.options.map((option, oIndex) => (
                 <div
                   key={oIndex}
@@ -228,6 +248,8 @@ const Poll = (props) => {
                   {option.title}
                 </div>
               ))}
+
+              {/* render chart for each question */}
               {chartData[qIndex] && (
                 <div className="graph animate__animated animate__fadeInRight">
                   <HorizontalBar
@@ -240,6 +262,8 @@ const Poll = (props) => {
           ))}
         </div>
       </div>
+
+      {/* copy poll url to clipboard */}
       <div className="share_icons animate__animated animate__fadeIn">
         <h3>
           Share this Poll <ShareAltOutlined />

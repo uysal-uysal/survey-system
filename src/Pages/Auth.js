@@ -12,6 +12,7 @@ import Loader from "../Loader.gif";
 const GoogleAuth = (props) => {
   const { user, loading } = UserSession();
 
+  // google login and authentication function
   const handleLogin = async () => {
     var provider = new firebase.auth.GoogleAuthProvider();
     firebase
@@ -30,8 +31,10 @@ const GoogleAuth = (props) => {
         var errorMessage = error.message;
         var email = error.email;
         var credential = error.credential;
+        return { errorCode, errorMessage, email, credential };
       });
   };
+
   useEffect(() => {
     if (user) {
       if (props.location.state) {

@@ -1,5 +1,6 @@
 import { firestore } from "./config";
 
+// create and update polls in firestore
 export const createPoll = (poll) => {
   const docRef = firestore.doc(`/polls/${poll.id}`);
   return docRef.set(poll);
